@@ -1,0 +1,29 @@
+
+#sample-div {
+    transition: all 0.2s ease-in;
+    height:100px;
+    width:100px;
+    margin:-100px;
+    background:violet;
+}
+.changeme {
+    height:200px !important;
+    width:200px !important;
+    margin:0px !important;
+}
+#display-data table td {
+    border: 1px solid blue;
+}
+
+.local {
+    background:darkblue;
+    color:white;
+}
+.remote {
+    background:chartreuse;
+    color:black;
+}
+.timing {
+    border:1px solid black;
+    padding:7px;
+}
