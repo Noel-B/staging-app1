@@ -7,16 +7,15 @@ function deleteLocal(){
 
 function deleteRemote(){
 	$.ajax({
-				type: "POST",
-				url:"https://myreviewr.com/php/test-mobile.php",
-				 crossDomain: true,
-				 cache: false,
-				 success: function(data){
-				 alert(data);
-				 }
-				 });
+		type: "POST",
+		url:"https://myreviewr.com/php/test-mobile.php",
+			crossDomain: true,
+			cache: false,
+			success: function(data){
+			alert(data);
+			}
+			});
 }
-
 
 function tableEvents() {
 $('td').on('blur',function(){
@@ -36,16 +35,16 @@ function updateRecord(dbname,tablename,guid,question){
 		where(lf.op.and(
 			tablename.guid.eq(guid))).exec().then(function(){
 				dbname.update(tablename).
-			set(tablename.record_stat, 'U').
-			set(tablename.uploaded, 'no').
-			where(lf.op.and(
-				tablename.guid.eq(guid),tablename.uploaded.eq('yes'))).
-			exec()}).then(function(){
-				dbname.select().from(tablename).exec().then(function(rows){
-					//remove this later
-					htmlTable(rows,'#from-lovefield');
-					tableEvents();
-			});
+				set(tablename.record_stat, 'U').
+				set(tablename.uploaded, 'no').
+				where(lf.op.and(
+					tablename.guid.eq(guid),tablename.uploaded.eq('yes'))).
+					exec()}).then(function(){
+					dbname.select().from(tablename).exec().then(function(rows){
+						//remove this later
+						htmlTable(rows,'#from-lovefield');
+						tableEvents();
+					});
 	});
 }
 
@@ -57,41 +56,40 @@ $('#clickme').on('click',function(){
 			$.ajax({
 				type: "POST",
 				url:"https://myreviewr.com/php/insert.php",
-				 data: "title="+val1+"&duration="+val2+"&price="+val3+"&insert=",
-				 crossDomain: true,
-				 cache: false,
-				 beforeSend: function(){ $("#insert").val('Connecting...');},
-				 success: function(data){
-				 alert(data);
-				 }
-				 });		
+				 	data: "title="+val1+"&duration="+val2+"&price="+val3+"&insert=",
+				 	crossDomain: true,
+					cache: false,
+					beforeSend: function(){ $("#insert").val('Connecting...');},
+					success: function(data){
+						alert(data);
+				 	}
+			});		
 		});
 		
 $('#showdata').on('click',function(){
+	var url="https://myreviewr.com/php/json.php";
 
-var url="https://myreviewr.com/php/json.php";
-$.getJSON(url,function(data){
+	$.getJSON(url,function(data){
 		htmlTable(data,'#display-data');
 		console.log(data);		
-});
+	});
 });
 
 function htmlTable(data,tablename) {
 	var colHeader = Object.keys(data[0]);
-
 	$(tablename+' thead tr th').remove();
-	$(tablename+' tbody tr').remove();	
+	$(tablename+' tbody tr').remove();
 
-			for(var i=0; i<colHeader.length; i++) {
-			  $(tablename+' thead tr').append('<th>' + colHeader[i] + '</th>');
-			}
+	for(var i=0; i<colHeader.length; i++) {
+		$(tablename+' thead tr').append('<th>' + colHeader[i] + '</th>');
+	}
 
-			for(var i=0; i<data.length; i++){
-			  $(tablename+' tbody').append('<tr></tr>')
-			  for(var j= 0; j<colHeader.length; j++){
-				$(tablename +' tbody tr').last().append('<td contenteditable>' + data[i][colHeader[j]] + '</td>');
-			  }
-			}
+	for(var i=0; i<data.length; i++){
+		$(tablename+' tbody').append('<tr></tr>')
+		for(var j= 0; j<colHeader.length; j++){
+		$(tablename +' tbody tr').last().append('<td contenteditable>' + data[i][colHeader[j]] + '</td>');
+		}
+	}
 }
 
 var LatestServer;
@@ -100,6 +98,7 @@ function update_time(){
 	var thisTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
 	return thisTime;
 }
+
 /* LOVEFIELD */
 var schemaBuilder = lf.schema.create('noeldb2', 1);
 
