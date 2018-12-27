@@ -1,4 +1,4 @@
-//this has been edited from office 23
+//this has been edited and updated via office network
 //From Phonegap  --anything else device specific?   app.initialize();
 function deleteLocal(){
 	test_db.delete().from(test).exec().then(function(){
