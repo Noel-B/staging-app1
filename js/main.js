@@ -65,7 +65,7 @@ $('#clickme').on('click',function(){
 				 	}
 			});		
 		});
-		
+
 $('#showdata').on('click',function(){
 	var url="https://myreviewr.com/php/json.php";
 
