@@ -68,13 +68,19 @@ $('#clickme').on('click',function(){
 		});
 
 $('#showdata').on('click',function(){
-	var url="https://myreviewr.com/php/json.php";
-
-	$.getJSON(url,function(data){
+	getServerdata(function(data){
 		htmlTable(data,'#display-data');
-		console.log(data);		
 	});
+	
 });
+
+function getServerdata(callback){
+	var url="https://myreviewr.com/php/json.php";
+	var data;
+	$.getJSON(url,function(data){
+		callback(data);
+	});
+}
 
 function htmlTable(data,tablename) {
 	var colHeader = Object.keys(data[0]);
@@ -145,38 +151,63 @@ function addRecord(new_id){
 
 
 $('#fromOffline').on('click',function(){
-	test_db.select().from(test).where(lf.op.and(        
+	Synchronize();
+});
+
+function Synchronize() {
+	test_db.select().from(test)
+	.where(lf.op.and(        
 		lf.op.or(
 			test.record_stat.eq('N'),
 			test.record_stat.eq('U')
 			),
 			test.uploaded.eq('no')
-			)).exec().then(function(rows) {
+			))
+	.exec()
+	.then(function(rows) {
 		var postData = JSON.stringify(rows);
-		console.log('data to be uploaded '+postData);	
-		$.ajax({
-            type: "POST",		
-            url: "https://myreviewr.com/php/insert-json.php",
-						data: {myData:postData},
-						crossDomain: true,
-				 		cache: false,
-            success: function(data){
-                alert('Items added');				
-				console.log('this is the parsed from server');
-				console.log(data);
-				
-				var server_data = JSON.parse(data);
-
-				local_update = server_data.map(l => test.createRow(l));
-				return test_db.insertOrReplace().into(test).values(local_update).exec().then(function(){alert('local updated');});
-            },
-            error: function(data){	
-                console.log(data);
-				console.log('error');
-            }
-    	});
+		console.log(rows);
+		if (postData==="[]") {
+			getServerdata(function(data){
+				var server_data = data;
+				doUpdate(server_data);
+			});
+			console.log('local data does not exists');
+		} else {
+			console.log('local data exists');	
+			$.ajax({
+				type: "POST",		
+				url: "https://myreviewr.com/php/insert-json.php",
+				data: {myData:postData},
+				crossDomain: true,
+				cache: false,
+				success: function(data){
+					alert('Items added');				
+					console.log('this is the parsed from server');
+					console.log(data);					
+					var server_data = JSON.parse(data);
+					doUpdate(server_data);					
+				},
+				error: function(data){	
+					console.log(data);
+					console.log('error');
+				}
+			});
+		}
 	});
-});
+}
+
+function doUpdate(server_data){
+	local_update = server_data.map(l => test.createRow(l));
+	return test_db
+		.insertOrReplace()
+		.into(test)
+		.values(local_update)
+		.exec()
+		.then(function(){
+		alert('local updated');
+	});
+}
 
 $('#showOffline').on('click',function(){
 	test_db.select().from(test).exec().then(function(rows){
