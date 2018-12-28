@@ -117,14 +117,14 @@ function update_time(){
 var schemaBuilder = lf.schema.create('noeldb2', 1);
 
 schemaBuilder.createTable('course_details').
-    addColumn('id', lf.Type.INTEGER).
-    addColumn('guid', lf.Type.STRING).
-    addColumn('user_row', lf.Type.INTEGER).
+	addColumn('id', lf.Type.INTEGER).
+	addColumn('guid', lf.Type.STRING).
+	addColumn('user_row', lf.Type.INTEGER).
 	addColumn('question', lf.Type.STRING).
-    addColumn('uploaded', lf.Type.STRING).
+	addColumn('uploaded', lf.Type.STRING).
 	addColumn('record_stat', lf.Type.STRING).
 	addColumn('update_on', lf.Type.STRING).
-    addPrimaryKey(['guid']);
+	addPrimaryKey(['guid']);
 
 var test_db;
 var test;
