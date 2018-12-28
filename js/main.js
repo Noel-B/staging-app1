@@ -34,18 +34,23 @@ function updateRecord(dbname,tablename,guid,question){
 		set(tablename.question, question).
 		set(tablename.update_on, update_time()).
 		where(lf.op.and(
-			tablename.guid.eq(guid))).exec().then(function(){
-				dbname.update(tablename).
-				set(tablename.record_stat, 'U').
-				set(tablename.uploaded, 'no').
-				where(lf.op.and(
-					tablename.guid.eq(guid),tablename.uploaded.eq('yes'))).
-					exec()}).then(function(){
-					dbname.select().from(tablename).exec().then(function(rows){
-						//remove this later
-						htmlTable(rows,'#from-lovefield');
-						tableEvents();
-					});
+				tablename.guid.
+					eq(guid))).
+					exec().
+	then(function(){
+		dbname.update(tablename).
+		set(tablename.record_stat, 'U').
+		set(tablename.uploaded, 'no').
+		where(lf.op.and(
+				tablename.guid.eq(guid),
+				tablename.uploaded.eq('yes'))).
+				exec()}).
+	then(function(){
+		dbname.select().from(tablename).exec().then(function(rows){
+			//remove this later
+			htmlTable(rows,'#from-lovefield');
+			tableEvents();
+		});
 	});
 }
 
@@ -92,9 +97,11 @@ function htmlTable(data,tablename) {
 	}
 
 	for(var i=0; i<data.length; i++){
-		$(tablename+' tbody').append('<tr></tr>')
+		$(tablename+' tbody').append('<tr></tr>');
+		
 		for(var j= 0; j<colHeader.length; j++){
-		$(tablename +' tbody tr').last().append('<td contenteditable>' + data[i][colHeader[j]] + '</td>');
+			$(tablename +' tbody tr').last().
+				append('<td contenteditable>' + data[i][colHeader[j]] + '</td>');
 		}
 	}
 }
@@ -166,13 +173,11 @@ function Synchronize() {
 	.exec()
 	.then(function(rows) {
 		var postData = JSON.stringify(rows);
-		console.log(rows);
 		if (postData==="[]") {
-			getServerdata(function(data){
-				var server_data = data;
-				doUpdate(server_data);
+			getServerdata(function(data){			
+				doUpdate(data);
 			});
-			console.log('local data does not exists');
+			console.log('local data does NOT EXIST');
 		} else {
 			console.log('local data exists');	
 			$.ajax({
@@ -183,13 +188,13 @@ function Synchronize() {
 				cache: false,
 				success: function(data){
 					alert('Items added');				
-					console.log('this is the parsed from server');
-					console.log(data);					
+					console.log('data from json.php: '+data);					
 					var server_data = JSON.parse(data);
+					console.log('server_data after parse: '+server_data);
 					doUpdate(server_data);					
 				},
 				error: function(data){	
-					console.log(data);
+					console.log('error'+data);
 					console.log('error');
 				}
 			});
@@ -199,21 +204,26 @@ function Synchronize() {
 
 function doUpdate(server_data){
 	local_update = server_data.map(l => test.createRow(l));
-	return test_db
-		.insertOrReplace()
-		.into(test)
-		.values(local_update)
-		.exec()
-		.then(function(){
-		alert('local updated');
-	});
+	console.log('local_update vals:'+local_update);
+	return test_db.
+		insertOrReplace().
+		into(test).
+		values(local_update).
+		exec().
+		then(function(){
+			alert('local updated');
+		});
 }
 
 $('#showOffline').on('click',function(){
-	test_db.select().from(test).exec().then(function(rows){
-		htmlTable(rows,'#from-lovefield');
-		tableEvents();
-	});
+	test_db.
+		select().
+		from(test).
+		exec().
+		then(function(rows){
+			htmlTable(rows,'#from-lovefield');
+			tableEvents();
+		});
 });
 
 		/*
